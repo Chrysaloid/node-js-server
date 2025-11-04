@@ -7,7 +7,7 @@ setlocal
 cd /d "%~dp0"
 call params.bat
 
-cd /d "G:/Biblioteki Windows/Dokumenty/1. Mój Folder/Informatyka/Python/SSH_COPY"
+cd /d "%SSH_COPY_FOLDER%"
 
 echo === Syncing files ===
 set args=
