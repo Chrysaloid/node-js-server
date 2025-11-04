@@ -1,6 +1,6 @@
 ﻿"use strict";
 
-console.clear()
+console.clear();
 const log = console.log;
 Object.defineProperty(Object.prototype, "lóg", {
 	get() {
