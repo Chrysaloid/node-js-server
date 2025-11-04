@@ -5,7 +5,19 @@ setlocal
 
 @REM Change working directory to script’s directory
 cd /d "%~dp0"
-call params.bat
+@REM === Load SSH/rsync connection parameters ===
+if exist params.bat (
+	call params.bat
+) else if exist params-example.bat (
+	echo WARNING: params.bat not found, using params-example.bat instead.
+	call params-example.bat
+	echo Copying params-example.bat to params.bat
+	copy params-example.bat params.bat
+) else (
+	echo ERROR: Neither params.bat nor params-example.bat found.
+	exit /b
+)
+if %errorlevel% neq 0 exit /b %errorlevel%
 
 cd /d "%SSH_COPY_FOLDER%"
 
