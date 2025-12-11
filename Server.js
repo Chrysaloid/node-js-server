@@ -31,14 +31,29 @@ const currDir = __dirname;
 process.chdir(currDir);
 const mainHTML = "site.html";
 function respond(res, statusCode, data, type = "text/plain") {
-	res.writeHead(statusCode, { "Content-Type": type, "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*" });
+	res.writeHead(statusCode, {
+		"Content-Type": statusCode === 200 ? type : "text/html",
+		"Access-Control-Allow-Origin": "*",
+		"Access-Control-Allow-Headers": "*",
+	});
 	if (statusCode === 200) {
 		res.end(data);
 	} else {
-		res.end(statusCode + " " + http.STATUS_CODES[statusCode] + (data !== undefined ? ". " + data : ""));
+		const statusCodeText = http.STATUS_CODES[statusCode];
+		res.end(/*html*/`<!DOCTYPE html>
+		<html>
+			<head>
+				<meta name="color-scheme" content="dark light"/>
+				<title>${statusCodeText}</title>
+			</head>
+			<body style="font-family: 'IBM Plex Sans Condensed', Arial, sans-serif;">
+				<h1 style="text-align: center;">${statusCode} - ${statusCodeText}${(data !== undefined ? ". " + data : "")}</h1>
+			</body>
+		</html>`); // .replaceAll(/^\s+|[\t\f ]+$|\n/gm, "") // this might not be faster on a mobile device
 	}
 }
 
+const WEBSITE_FOLDER = "website";
 const server = http.createServer(async (req, res) => {
 	if (req.method === "OPTIONS") {
 		respond(res, 200, "");
@@ -76,7 +91,7 @@ const server = http.createServer(async (req, res) => {
 			respond(res, 500); // Internal Server Error
 		}
 	} else {
-		const filePath = path.join(currDir, pathname === "/" ? mainHTML : pathname);
+		const filePath = path.join(currDir, WEBSITE_FOLDER, pathname === "/" ? mainHTML : pathname);
 		fs.stat(filePath, (err, stats) => {
 			if (err) {
 				if (err.code === "ENOENT") {
@@ -123,10 +138,19 @@ function getLocalNetworkObject() {
 server.listen(3090, async err => {
 	if (err) return console.error(err);
 
-	myAdress = `http://${getLocalNetworkObject().address}:${server.address().port}/`;
+	const myPort = server.address().port;
+	myAdress = `http://${getLocalNetworkObject().address}:${myPort}/`;
 
-	log(`Server running at ${myAdress}`);
-	log(`Base directory: ${currDir}`);
+	log(`Server running at ${
+		Object.values(os.networkInterfaces())
+		.map(interArr => {
+			return interArr.filter(iface => {
+				return iface.family === "IPv4" && !iface.internal && iface.address.startsWith("192.168.");
+			}).map(iface => `http://${iface.address}:${myPort}/`)
+			.join(" and ");
+		}).filter(s => s).join(" and ")}`
+	);
+	log(`Base directory: ${currDir}/${WEBSITE_FOLDER}`);
 });
 
 // tail -n +1 -f ~/node-js-server/server.log
