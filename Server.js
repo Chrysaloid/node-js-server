@@ -128,3 +128,5 @@ server.listen(3090, async err => { // default address: http://localhost:3090/
 	log(`Server running at ${myAdress}`);
 	log(`Base directory: ${currDir}`);
 });
+
+// tail -n +1 -f ~/node-js-server/server.log
