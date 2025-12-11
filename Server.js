@@ -120,7 +120,7 @@ function getLocalNetworkObject() {
 	}
 	return "localhost"; // fallback
 }
-server.listen(3090, async err => { // default address: http://localhost:3090/
+server.listen(3090, async err => {
 	if (err) return console.error(err);
 
 	myAdress = `http://${getLocalNetworkObject().address}:${server.address().port}/`;
@@ -130,3 +130,4 @@ server.listen(3090, async err => { // default address: http://localhost:3090/
 });
 
 // tail -n +1 -f ~/node-js-server/server.log
+// http://192.168.0.167:3090/
