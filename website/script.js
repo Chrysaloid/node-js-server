@@ -1,4 +1,4 @@
-﻿"use strict";
+"use strict";
 
 // #region //* Project-Base.js
 const log = console.log;

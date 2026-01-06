@@ -1,4 +1,4 @@
-﻿"use strict";
+"use strict";
 
 console.clear();
 const log = console.log;
