@@ -31,7 +31,7 @@ set args=%args% --remote-folder "%REMOTE_FOLDER%"
 set args=%args% --create-dest-folder
 set args=%args% --recursive
 set args=%args% --mode sync
-set args=%args% --exclude-files  server.pid  *.log  *.bat  .git*  LICENSE  README.md
+set args=%args% --exclude-files  server.pid  *.log  *.bat  *.cmd  .git*  LICENSE  README.md
 set args=%args% --exclude-folders  node_modules  .git
 
 python SSH_SYNC.py %args%

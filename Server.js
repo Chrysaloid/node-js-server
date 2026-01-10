@@ -1,4 +1,4 @@
-"use strict";
+﻿"use strict";
 
 console.clear();
 const log = console.log;
@@ -118,6 +118,7 @@ const server = http.createServer(async (req, res) => {
 				"Access-Control-Allow-Origin": "*",
 				"Access-Control-Allow-Headers": "*",
 				"Cache-Control": "public, max-age=0, must-revalidate",
+				"Content-Length": stats.size,
 			});
 
 			// Stream the file directly to the response
