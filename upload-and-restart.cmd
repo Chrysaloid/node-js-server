@@ -31,7 +31,7 @@ set args=%args% --remote-folder "%REMOTE_FOLDER%"
 set args=%args% --create-dest-folder
 set args=%args% --recursive
 set args=%args% --mode sync
-set args=%args% --exclude-files  server.pid  *.log  *.bat  *.cmd  .git*  LICENSE  README.md
+set args=%args% --exclude-files  server.pid  *.log  *.bat  *.cmd  .git*  LICENSE  README.md  usb-switch  usbtest
 set args=%args% --exclude-folders  node_modules  .git
 
 python SSH_SYNC.py %args%
@@ -40,6 +40,5 @@ if %errorlevel% neq 0 exit /b %errorlevel%
 echo:
 echo === Restarting Node.js server ===
 @REM -l = --login
-ssh -p %PORT% "%USERNAME%@%HOSTNAME%" "cd %REMOTE_FOLDER% && bash -l start-server.sh"
+ssh -p %PORT% "%USERNAME%@%HOSTNAME%" "cd %REMOTE_FOLDER% && bash --login start-server.sh"
 if %errorlevel% neq 0 exit /b %errorlevel%
-

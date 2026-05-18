@@ -15,9 +15,13 @@ body {
 	margin: auto;
 	padding: var(--padd);
 	text-align: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--padd);
 }
 h1 {
-	margin: 0 0 var(--padd) 0;
+	margin: 0;
 }
 table, th, td {
 	border: 1px solid white;
@@ -32,4 +36,10 @@ table {
 
 /* ------------------------------------------------------------------------------------------------------------ */
 
-
+button {
+	cursor: pointer;
+	font-size: 40px;
+}
+[disabled] {
+	cursor: not-allowed;
+}
