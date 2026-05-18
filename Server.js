@@ -33,6 +33,9 @@ function currentTime() {
 function sleep(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms)); // eslint-disable-line no-promise-executor-return
 }
+function sanitizeFilename(filename = "") {
+	return filename.replaceAll(/^\/?(\.\.\/)+|\.?\//g, "");
+}
 
 /* // Może kiedyś
 exec("termux-usb -l", (error, stdout, stderr) => {
@@ -91,6 +94,12 @@ function switchOff() { return sendCommand(switchProcess, "0") }
 
 let myAdress;
 const currDir = __dirname;
+const websiteFiles = new Set([
+	"script.js",
+	"style.css",
+	"site.html",
+	"http.png",
+]);
 process.chdir(currDir);
 const mainHTML = "site.html";
 function simpleResponder(req, res, statusCode = OK, data, type = textType) {
@@ -115,7 +124,8 @@ function simpleResponder(req, res, statusCode = OK, data, type = textType) {
 				<body style="font-family: 'IBM Plex Sans Condensed', Arial, sans-serif;">
 					<h1 style="text-align: center;">${statusCode} - ${statusCodeText}${(data !== undefined ? ". " + data : "")}</h1>
 				</body>
-			</html>`); // .replaceAll(/^\s+|[\t\f ]+$|\n/gm, "") // this might not be faster on a mobile device
+			</html>
+		`); // .replaceAll(/^\s+|[\t\f ]+$|\n/gm, "") // this might not be faster on a mobile device
 	}
 }
 
@@ -144,12 +154,13 @@ const server = http.createServer(async (req, res) => {
 		const { name, data } = reqJson;
 		switch (name) {
 			case "write_file": {
+				const filename = sanitizeFilename(data.fileName || "output.txt");
+				if (websiteFiles.has(filename)) return respond(403); // Permission denied
 				const content = data.content || "";
-				const fileName = data.fileName || "output.txt";
 				const writeFun = data.append ? fs.appendFile : fs.writeFile;
-				log(`Wrote to file "${fileName}"`);
+				log(`Wrote to file "${filename}"`);
 
-				const filePath = path.join(currDir, fileName);
+				const filePath = path.join(currDir, WEBSITE_FOLDER, filename);
 				writeFun(filePath, content, "utf8", err => {
 					if (err) return respond(500, "Error writing to file"); // Internal Server Error
 					respond();
@@ -162,8 +173,9 @@ const server = http.createServer(async (req, res) => {
 				break;
 			}
 			default: {
-				log(chalk.red(`Nie ma eventu o nazwie "${name}". Otrzymano dane:`), data);
-				respond(OK, "OK");
+				const txt = `There is no event of name "${name}"`;
+				log(chalk.red(`${txt}. Received data:`), data);
+				respond(400, txt); // Bad Request
 				break;
 			}
 		}
@@ -192,7 +204,7 @@ const server = http.createServer(async (req, res) => {
 			respond(500, "Switch process failed"); // Internal Server Error
 		}
 	} else {
-		const filePath = path.join(currDir, WEBSITE_FOLDER, pathname === "/" ? mainHTML : pathname);
+		const filePath = path.join(currDir, WEBSITE_FOLDER, pathname === "/" ? mainHTML : sanitizeFilename(pathname));
 		fs.stat(filePath, (err, stats) => {
 			if (err) {
 				if (err.code === "ENOENT") {
