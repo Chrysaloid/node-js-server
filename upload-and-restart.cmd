@@ -7,10 +7,10 @@ setlocal
 cd /d "%~dp0"
 @REM === Load SSH/rsync connection parameters ===
 if exist params.bat (
-	call params.bat
+	call ./params.bat
 ) else if exist params-example.bat (
 	echo WARNING: params.bat not found, using params-example.bat instead.
-	call params-example.bat
+	call ./params-example.bat
 	echo Copying params-example.bat to params.bat
 	copy params-example.bat params.bat
 ) else (

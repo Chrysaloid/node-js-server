@@ -142,51 +142,6 @@ const server = http.createServer(async (req, res) => {
 	log(`${currentTime()} - ${pathname}`);
 	if (pathname === "/ping") {
 		respond();
-	} else if (req.method === "POST") {
-		let reqJson;
-		try {
-			reqJson = await json(req);
-		} catch (err) {
-			respond(400, "Invalid JSON data"); // Bad Request
-			return;
-		}
-
-		const { name, data } = reqJson;
-		switch (name) {
-			case "write_file": {
-				const filename = sanitizeFilename(data.fileName || "output.txt");
-				if (websiteFiles.has(filename)) return respond(403); // Permission denied
-				const content = data.content || "";
-				const writeFun = data.append ? fs.appendFile : fs.writeFile;
-				log(`Wrote to file "${filename}"`);
-
-				const filePath = path.join(currDir, WEBSITE_FOLDER, filename);
-				writeFun(filePath, content, "utf8", err => {
-					if (err) return respond(500, "Error writing to file"); // Internal Server Error
-					respond();
-				});
-				break;
-			}
-			case "log": {
-				log(data);
-				respond();
-				break;
-			}
-			default: {
-				const txt = `There is no event of name "${name}"`;
-				log(chalk.red(`${txt}. Received data:`), data);
-				respond(400, txt); // Bad Request
-				break;
-			}
-		}
-	} else if (pathname === "/redirect") {
-		try {
-			const url = reqURL.searchParams.get("url");
-			fetch(url).then(response => response.arrayBuffer()).then(data => respond(OK, Buffer.from(data)));
-		} catch (err) {
-			log(err);
-			respond(500); // Internal Server Error
-		}
 	} else if (pathname === "/openGate") {
 		if (!switchProcess || switchProcess.exitCode) return respond(500, "Switch process is not running"); // Internal Server Error
 		if (!switchProcess.ready) return respond(503, "Switch process is not ready"); // Service Unavailable
