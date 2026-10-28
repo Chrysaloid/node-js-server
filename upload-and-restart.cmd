@@ -34,7 +34,7 @@ set args=%args% --mode sync
 set args=%args% --exclude-files  server.pid  *.log  *.bat  *.cmd  .git*  LICENSE  README.md  usb-switch  usbtest
 set args=%args% --exclude-folders  node_modules  .git
 
-python SSH_SYNC.py %args%
+python ssh_sync.py %args%
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 echo:

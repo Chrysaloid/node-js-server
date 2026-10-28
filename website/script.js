@@ -36,7 +36,7 @@ function readFile(filename, fileType, redirect = false) {
 				case "json":
 					return resp.json();
 				case "xml":
-					return resp.text().then(frycAPI.parseXML);
+					return resp.text().then(frycAPI.parse_xml);
 				case "jpg":
 				case "jpeg":
 				case "png":
